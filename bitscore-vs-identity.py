@@ -206,7 +206,7 @@ def plot(
 
     start = time()
 
-    for errorCount in range(0, length, errorIncrement):
+    for errorCount in range(0, length + 1, errorIncrement):
         if verbose:
             print(f"Making {errorCount} errors:")
 
@@ -236,7 +236,7 @@ def plot(
                     color.append(matchColor)
                     successCounts[errorCount] += 1
 
-        errorCounts.extend([errorCount] * iterations)
+        errorCounts.extend([errorCount / length * 100.0] * iterations)
 
     elapsed = int(time() - start)
 
@@ -244,22 +244,31 @@ def plot(
     # the right-hand axis.
     successX = []
     successY = []
+    threshold50 = None
 
-    for errorCount in range(0, length, errorIncrement):
-        successX.append(errorCount)
-        successY.append(successCounts[errorCount] / iterations)
+    for errorCount in range(0, length + 1, errorIncrement):
+        detectionProb = successCounts[errorCount] / iterations
+        if detectionProb < 0.5 and threshold50 is None:
+            threshold50 = int(errorCount / length * 100.0)
+        successX.append(errorCount / length * 100.0)
+        successY.append(detectionProb)
 
     titleFontSize = 10
     axisFontSize = 8
 
-    title = f"{sensitivity or 'default'} ({elapsed}s)"
+    title = (
+        "Option: "
+        + (f"--{sensitivity}." if sensitivity else "defaults.")
+        + f"  Elapsed: {elapsed}s.\n"
+        f"50% detection: {threshold50}% AA difference."
+    )
     ax.scatter(errorCounts, bitscores, s=dotsize, color=color)
     ax.set_title(title, fontsize=titleFontSize)
     if bottom:
-        ax.set_xlabel("AA mismatches", fontsize=axisFontSize)
+        ax.set_xlabel("Query % AA difference", fontsize=axisFontSize)
     if lhs:
         ax.set_ylabel("DIAMOND bitscore", fontsize=axisFontSize)
-    ax.set_xlim((0.0, length + 1))
+    ax.set_xlim((0.0, 100.0))
     ax.set_ylim((-(iterations + 1) * zeroBitscoreScale, max(bitscores) + 5.0))
     ax.grid()
 
@@ -278,9 +287,9 @@ def main():
     # by an earlier run, as opposed to being what a regular English-speaker might
     # expect from the words.
     sensitivities = (
-        None,
         "faster",
         "fast",
+        None,
         "very-sensitive",
         "mid-sensitive",
         "more-sensitive",
@@ -288,9 +297,12 @@ def main():
         "ultra-sensitive",
     )
 
-    cols = 3
+    side = 3.5
+    cols = 4
     rows = len(sensitivities) // cols + bool(len(sensitivities) % cols)
-    fig, axes = plt.subplots(rows, cols, figsize=(12, 9), sharex="col", sharey="row")
+    fig, axes = plt.subplots(
+        rows, cols, figsize=(side * cols, side * rows), sharex="col", sharey="row"
+    )
     dimensions = dimensionalIterator((rows, cols))
 
     with TemporaryDirectory() as tmpdir:
@@ -338,9 +350,10 @@ def main():
         .split()[-1]
     )
 
-    fig.subplots_adjust(top=0.87)
+    fig.tight_layout(rect=[0, 0, 1, 0.89])
+
     fig.suptitle(
-        f"AA mismatch count vs DIAMOND (v{version}) bitscore."
+        f"Query %AA difference vs DIAMOND (v{version}) bitscore."
         "\n"
         f"Sequence length {args.length} with {args.iterations} iterations at each "
         "identity level."

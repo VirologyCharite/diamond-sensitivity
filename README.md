@@ -5,9 +5,40 @@ Here is a simple analysis of how
 its sensitivity setting and the match (if any) between a subject sequence and
 query sequences with varying amino acid identity.
 
-The end result looks like this:
+## Results
+
+The plot of all sensitivity options looks like this:
 
 <img src="plot.png" width=800>
+
+### What do we learn from all this?
+
+* The names DIAMOND uses to indicate speed or sensitivity don't mean much.
+* The `--fast` and `--faster` options are no faster (in fact sometimes both are
+  slower) than DIAMOND's default (when no speed/sensitivity
+  option is specified).
+* The `--faster` option fails to match much sooner (in terms of
+  decreasing AA identity) than all other options.
+* The default setting has a good tradeoff between speed and detection.
+* If you want to do better, the best next step is `--very-sensitive` (which
+  does better detection and is much better than `--sensitive`,
+  `--mid-sensitive`, and `--more-sensitive`).
+* `--ultra-sensitive` has the best detection, but getting to detection at the
+  70% AA difference level takes about 5x as long as the 65% AA difference
+  detection achieved by `--very-sensitive`.
+
+Overall, I would use the defaults if you want things to be fast and don't
+care about being able to reliably detect matches with more than 40% AA
+difference. Use `--very-sensitve` if you want much better detection (50%
+better) for which you'll pay less than a 2x time penalty.
+
+### Future?
+
+I didn't try combining any options, like `--faster --very-sensitive`. I'm not
+sure that's worth trying (or even allowed) since it's obvious from the plots
+that the `--fast` and `--faster` options both reduce sensitivity. So a
+combination like the above is asking to both reduce and increase sensitivity,
+which doesn't sound very useful.
 
 ## Requirements
 
