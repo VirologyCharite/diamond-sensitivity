@@ -5,6 +5,10 @@ Here is a simple analysis of how
 its sensitivity setting and the match (if any) between a subject sequence and
 query sequences with varying amino acid identity.
 
+The end result looks like this:
+
+[plot](plot.png)
+
 ## Requirements
 
 You'll need Python and
@@ -41,7 +45,7 @@ failing call is just repeated (with a different random subject and query).
 
 If you want to vary things, you can see available options via `--help`:
 
-```sh
+```
 $ ./bitscore-vs-identity.py --help
 usage: bitscore-vs-identity.py [-h] [--length N] [--blastxArgs ARGS] [--iterations N]
                                [--dotsize N] [--verbose] [--output FILENAME]
