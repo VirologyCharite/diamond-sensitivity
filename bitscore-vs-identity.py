@@ -127,10 +127,11 @@ def sampleBitScore(
         f"diamond makedb --in {subjectFile!r} --db {dbFile!r} --quiet", shell=True
     )
 
+    # Save the query sequence.
     with open(queryFile, "w") as fp:
         print(queryDNA.toString("fasta"), file=fp, end="")
 
-    # Match the query.
+    # And match the query against the DIAMOND database.
     match = (
         subprocess.check_output(
             f"diamond blastx {blastxArgs} --query {queryFile!r} "
