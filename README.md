@@ -19,7 +19,7 @@ You'll need Python and
 ## Execution
 
 The default is to try to match a 100 amino acid string with queries that vary
-from fully identical to fully mismatched, with each level of mismatch done 20
+from fully identical to fully mismatched, with each level of mismatch done 10
 times. To run with these defaults, use `./bitscore-vs-identity.py`. This will
 write `plot.pdf` by default, which you can change via `--output`.
 
