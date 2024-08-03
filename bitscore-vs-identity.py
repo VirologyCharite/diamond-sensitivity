@@ -226,8 +226,10 @@ def plot(
             else:
                 iteration += 1
                 if score == 0.0:
+                    bitscores.append(
+                        (missCounts[errorCount] - iterations) * zeroBitscoreScale
+                    )
                     missCounts[errorCount] += 1
-                    bitscores.append(-missCounts[errorCount] * zeroBitscoreScale)
                     color.append(missColor)
                 else:
                     bitscores.append(score)
@@ -296,6 +298,18 @@ def main():
         for sensitivity in sensitivities:
             print(f"Processing sensitivity: {sensitivity}.")
             row, col = next(dimensions)
+
+            # Here's how to know if you're on the bottom row or on the very right of the
+            # second-bottom row after the subplots in the very bottom row are all
+            # done. But using this to put an x-axis label on those second-bottom row
+            # subplots looks weird.
+            #
+            # bottom = (row == rows - 1) or (
+            #     row == rows - 2 and
+            #     len(sensitivities) % cols and
+            #     col >= len(sensitivities) % cols
+            # )
+
             plot(
                 axes[row][col],
                 row == rows - 1,
