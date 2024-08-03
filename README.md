@@ -23,17 +23,19 @@ from fully identical to fully mismatched, with each level of mismatch done 10
 times. To run with these defaults, use `./bitscore-vs-identity.py`. This will
 write `plot.pdf` by default, which you can change via `--output`.
 
-The output from such a run is in this repo as `plot.pdf`.
+The output from such a run is in this repo as `plot.pdf` and (as a screenshot
+of the PDF) `plot.png`.
 
-The sub-plot titles indicate the sensitivity setting and the elapsed time in
-seconds (in parens).  The elapsed time is for the whole plot - i.e., all
-identity levels times the number of iterations at each level.  The
-sensitivity names DIAMOND uses imply (to me) run times that don't match very
-well with the reality.
+The subplot titles indicate the sensitivity setting argument passed to
+`diamond blastx` (with the leading `--` removed) or "default" if no argument
+was passed, plus the elapsed time in seconds (in parens).  The elapsed time is
+for the whole plot - i.e., all identity levels times the number of iterations
+at each level. The sensitivity names DIAMOND uses imply (to me) run times
+that don't match very well with the reality.
 
-The red dots at the bottom of the subplots (with negative bitscores) indicate
-calls when DIAMOND failed to match at that identity level (i.e., x-axis amino
-acid mismatch count).
+The reddish (actually "tomato") dots at the bottom of the subplots (with
+negative bitscores) indicate calls when DIAMOND failed to match at that
+identity level (i.e., at that amino acid mismatch count).
 
 Note that on OS X 14.5 the Python `subprocess` call to `diamond blastx`
 occasionally does not return. I don't know why. When making the identical

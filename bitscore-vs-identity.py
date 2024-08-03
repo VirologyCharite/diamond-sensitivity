@@ -221,8 +221,7 @@ def plot(
                 # On OS X 14.5 the Python subprocess call to diamond blastx very
                 # occasionally does not return. I don't know why. When making the
                 # identical call on the command line, diamond (v2.1.9) exits
-                # immediately with status zero and no output (instead of writing a
-                # bitscore). So we just do it again.
+                # immediately with status zero and no output. So we just do it again.
                 print("DIAMOND subprocess timeout! Repeating.", file=sys.stderr)
             else:
                 iteration += 1
@@ -248,8 +247,8 @@ def plot(
         successX.append(errorCount)
         successY.append(successCounts[errorCount] / iterations)
 
-    titleFontSize = 9
-    axisFontSize = 7
+    titleFontSize = 10
+    axisFontSize = 8
 
     title = f"{sensitivity or 'default'} ({elapsed}s)"
     ax.scatter(errorCounts, bitscores, s=dotsize, color=color)
@@ -265,26 +264,32 @@ def plot(
     ax2 = ax.twinx()
     ax2.plot(successX, successY, linewidth=1)
     if rhs:
-        ax2.set_ylabel("DIAMOND detection rate", fontsize=axisFontSize)
+        ax2.set_ylabel("DIAMOND match detection rate", fontsize=axisFontSize)
+    else:
+        ax2.yaxis.set_visible(False)
 
 
 def main():
     args = getArgs()
-    rows, cols = 2, 3
-    fig, axes = plt.subplots(rows, cols, figsize=(12, 9), sharex="col", sharey="row")
-    dimensions = dimensionalIterator((rows, cols))
 
     # The ordering here is according to increasing elapsed time. This is as determined
     # by an earlier run, as opposed to being what a regular English-speaker might
     # expect from the words.
     sensitivities = (
         None,
+        "faster",
+        "fast",
         "very-sensitive",
         "mid-sensitive",
         "more-sensitive",
         "sensitive",
         "ultra-sensitive",
     )
+
+    cols = 3
+    rows = len(sensitivities) // cols + bool(len(sensitivities) % cols)
+    fig, axes = plt.subplots(rows, cols, figsize=(12, 9), sharex="col", sharey="row")
+    dimensions = dimensionalIterator((rows, cols))
 
     with TemporaryDirectory() as tmpdir:
         tmpdir = Path(tmpdir)
@@ -305,6 +310,12 @@ def main():
                 sensitivity,
                 tmpdir,
             )
+
+    # Hide the final subplots (if any) that have no content. We do this because the
+    # panel is a rectangular grid and some of the plots at the end of the last row may
+    # be unused.
+    for row, col in dimensions:
+        axes[row][col].axis("off")
 
     version = (
         subprocess.check_output("diamond --version", shell=True)
