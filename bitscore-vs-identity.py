@@ -111,7 +111,7 @@ def sampleBitScore(
 
     queryDNA = DNARead("query", "".join(choice(CODONS[aa]) for aa in queryAa))
 
-    # Sanity check that we have the right number of errorCount.
+    # Sanity check that we have the right number of aa mismatches.
     assert errorCount == sum(a != b for (a, b) in zip(queryAa, subject.sequence))
 
     subjectFile = str(tmpdir / "subject.fasta")
