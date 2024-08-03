@@ -7,7 +7,7 @@ query sequences with varying amino acid identity.
 
 The end result looks like this:
 
-[plot](plot.png)
+<img src="plot.png" width=800>
 
 ## Requirements
 
